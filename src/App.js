@@ -7,128 +7,71 @@
 
 import React from "react";
 import "./styles.css";
-
 import Button from "react-bootstrap/Button";
 //import Web3 from "web3";
 
-async function ETHUSD() {
-  console.log("--- ETH/USD ---");
-  const Web3 = require("web3");
-  const web3 = new Web3(
-    new Web3.providers.HttpProvider(
-      "https://ropsten.infura.io/v3/4a822f7586ac479bafffc81d99167a17"
-    )
-  );
-  const aggregatorInterfaceABI = [
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "int256",
-          name: "current",
-          type: "int256"
-        },
-        {
-          indexed: true,
-          internalType: "uint256",
-          name: "roundId",
-          type: "uint256"
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "timestamp",
-          type: "uint256"
-        }
-      ],
-      name: "AnswerUpdated",
-      type: "event"
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: "uint256",
-          name: "roundId",
-          type: "uint256"
-        },
-        {
-          indexed: true,
-          internalType: "address",
-          name: "startedBy",
-          type: "address"
-        },
-        {
-          indexed: false,
-          internalType: "uint256",
-          name: "startedAt",
-          type: "uint256"
-        }
-      ],
-      name: "NewRound",
-      type: "event"
-    },
-    {
-      inputs: [{ internalType: "uint256", name: "roundId", type: "uint256" }],
-      name: "getAnswer",
-      outputs: [{ internalType: "int256", name: "", type: "int256" }],
-      stateMutability: "view",
-      type: "function"
-    },
-    {
-      inputs: [{ internalType: "uint256", name: "roundId", type: "uint256" }],
-      name: "getTimestamp",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function"
-    },
-    {
-      inputs: [],
-      name: "latestAnswer",
-      outputs: [{ internalType: "int256", name: "", type: "int256" }],
-      stateMutability: "view",
-      type: "function"
-    },
-    {
-      inputs: [],
-      name: "latestRound",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function"
-    },
-    {
-      inputs: [],
-      name: "latestTimestamp",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function"
-    }
-  ];
-  const addr = "0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507";
-  const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addr);
-  priceFeed.methods
-    .latestAnswer()
-    .call()
-    .then((price) => {
-      //Do something with price
-      console.log(price);
-    });
-}
+const ABICODE = require('./contracts/abi/aggregatorInterface.json');
 
-export default function App() {
-  return (
-    <div className="App">
-      <h1>Using ChainLink</h1>
-      <h2>Using the ETH/USD Price Feed</h2>
-      <p>https://feeds.chain.link/eth-usd</p>
-      <p>Network: Ropsten</p>
-      <p>Aggregator: ETH/USD</p>
-      <p>Address: 0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507</p>
-      <Button variant="primary" onClick={ETHUSD}>
-        ETH/USD
-      </Button>{" "}
-    </div>
-  );
+class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      token: 0,
+      value: null
+    };
+    this.ETHUSD = this.ETHUSD.bind(this);
+  }
+
+  ETHUSD = async () => {
+    console.log("--- ETH/USD ---");
+    const Web3 = require("web3");
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(
+        "https://rinkeby.infura.io/v3/fedfa150b08c4b8faacdc53c2e673798"
+      )
+    );
+    const aggregatorInterfaceABI = ABICODE;
+    const addrETH = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e";
+    const addrDAI = "0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF";
+    const addrCHF = "0x5e601CF5EF284Bcd12decBDa189479413284E1d2";
+    const addrAUD = "0x21c095d2aDa464A294956eA058077F14F66535af";
+    const addrEUR = "0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F";
+    const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addrETH);
+    priceFeed.methods
+      .latestAnswer()
+      .call()
+      .then((price) => {
+        //Do something with price
+        this.setState({value: price});
+        console.log(price);
+      });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Using ChainLink</h1>
+        <h2>Using the ETH/USD Price Feed</h2>
+        <p>https://feeds.chain.link/eth-usd</p>
+        <p>Network: rinkeby</p>
+        <p>Aggregator: ETH/USD</p>
+        <p>Address: 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e</p>
+        <p/>
+        <select id="mySelect" onChange={this.setCoin}>
+          <option value="0">ETH</option>
+          <option value="1">DAI</option>
+          <option value="2">CHF</option>
+          <option value="3">AUD</option>
+          <option value="4">EUR</option>
+        </select>
+        <Button variant="primary" onClick={this.ETHUSD}>
+          Tell me the Price
+        </Button>
+        <p/>
+        {this.state.value}
+      </div>
+    );
+  }
 }
+export default App;
