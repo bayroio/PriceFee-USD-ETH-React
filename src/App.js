@@ -6,12 +6,13 @@
  */
 
 import React from "react";
-import "./styles.css";
 import Button from "react-bootstrap/Button";
+import "./styles.css";
 //import Web3 from "web3";
 
 const ABICODE = require('./contracts/abi/aggregatorInterface.json');
-
+const RESOURCES = require('./resources/directoryRinkeby.json');
+const currencies = RESOURCES.tokens;
 class App extends React.Component {
 
   constructor(props) {
@@ -20,11 +21,23 @@ class App extends React.Component {
       token: 0,
       value: null
     };
-    this.ETHUSD = this.ETHUSD.bind(this);
   }
 
+  setCoin(e, property) {
+    const { value } = e.target;
+    this.setState({[property]: value});
+  }
+
+  createSelectItems() {
+    let items = [];
+    for (let i = 0; i < currencies.length; i++) {
+      items.push(<option key={i} value={i}>{currencies[i].symbol}</option>);
+    }
+    return items;
+  }  
+
   ETHUSD = async () => {
-    console.log("--- ETH/USD ---");
+    console.log("--- TOKEN/USD ---");
     const Web3 = require("web3");
     const web3 = new Web3(
       new Web3.providers.HttpProvider(
@@ -32,17 +45,15 @@ class App extends React.Component {
       )
     );
     const aggregatorInterfaceABI = ABICODE;
-    const addrETH = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e";
-    const addrDAI = "0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF";
-    const addrCHF = "0x5e601CF5EF284Bcd12decBDa189479413284E1d2";
-    const addrAUD = "0x21c095d2aDa464A294956eA058077F14F66535af";
-    const addrEUR = "0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F";
-    const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addrETH);
+    console.log("TOKEN",this.state.token);
+    var addr = currencies[this.state.token].address;
+    const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addr);
     priceFeed.methods
       .latestAnswer()
       .call()
       .then((price) => {
         //Do something with price
+        price = price / 100000000;
         this.setState({value: price});
         console.log(price);
       });
@@ -52,24 +63,19 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1>Using ChainLink</h1>
-        <h2>Using the ETH/USD Price Feed</h2>
-        <p>https://feeds.chain.link/eth-usd</p>
-        <p>Network: rinkeby</p>
-        <p>Aggregator: ETH/USD</p>
-        <p>Address: 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e</p>
+        <h2>Using the TOKEN/USD Price Feed</h2>
+        <p>https://feeds.chain.link/</p>
+        <p>Network: Rinkeby</p>
+        <p>Aggregator: Token/USD</p>
         <p/>
-        <select id="mySelect" onChange={this.setCoin}>
-          <option value="0">ETH</option>
-          <option value="1">DAI</option>
-          <option value="2">CHF</option>
-          <option value="3">AUD</option>
-          <option value="4">EUR</option>
+        <select id="mySelect" onChange={e => this.setCoin(e, 'token')}>
+          {this.createSelectItems()}
         </select>
         <Button variant="primary" onClick={this.ETHUSD}>
           Tell me the Price
         </Button>
         <p/>
-        {this.state.value}
+        ${this.state.value} USD
       </div>
     );
   }
