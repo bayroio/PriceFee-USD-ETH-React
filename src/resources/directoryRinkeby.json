@@ -1,0 +1,45 @@
+{
+    "name": "Rinkeby List",
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "tokens": [
+        {
+        "address": "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
+        "chainId": 4,
+        "name": "Ether",
+        "symbol": "ETH",
+        "decimals": 18
+        },
+        {
+        "address": "0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF",
+        "chainId": 4,
+        "name": "DAI",
+        "symbol": "DAI",
+        "decimals": 18
+        },
+        {
+        "address": "0x5e601CF5EF284Bcd12decBDa189479413284E1d2",
+        "chainId": 4,
+        "name": "Swiss franc",
+        "symbol": "CHF",
+        "decimals": 18
+        },
+        {
+        "address": "0x21c095d2aDa464A294956eA058077F14F66535af",
+        "chainId": 4,
+        "name": "Australian dollar",
+        "symbol": "AUD",
+        "decimals": 18
+        },
+        {
+        "address": "0x78F9e60608bF48a1155b4B2A5e31F32318a1d85F",
+        "chainId": 4,
+        "name": "Euro",
+        "symbol": "EUR",
+        "decimals": 18
+        }
+    ]
+}
