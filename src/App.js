@@ -18,14 +18,24 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      token: 0,
-      value: null
+      token1: 0,
+      token2: 0,
+      value1: null,
+      value2: null
     };
   }
 
-  setCoin(e, property) {
+
+
+  handleFormChange (e, property, method) {
     const { value } = e.target;
-    this.setState({[property]: value});
+    this.setState({[property]: value}, () => {
+      if(method == 1){
+        this.ETHUSD1();
+      } else {
+        this.ETHUSD2();
+      }
+    });
   }
 
   createSelectItems() {
@@ -36,7 +46,7 @@ class App extends React.Component {
     return items;
   }  
 
-  ETHUSD = async () => {
+  ETHUSD1 = async () => {
     console.log("--- TOKEN/USD ---");
     const Web3 = require("web3");
     const web3 = new Web3(
@@ -45,8 +55,8 @@ class App extends React.Component {
       )
     );
     const aggregatorInterfaceABI = ABICODE;
-    console.log("TOKEN",this.state.token);
-    var addr = currencies[this.state.token].address;
+    console.log("TOKEN",this.state.token1);
+    var addr = currencies[this.state.token1].address;
     const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addr);
     priceFeed.methods
       .latestAnswer()
@@ -54,7 +64,30 @@ class App extends React.Component {
       .then((price) => {
         //Do something with price
         price = price / 100000000;
-        this.setState({value: price});
+        this.setState({value1: price});
+        console.log(price);
+      });
+  }
+
+  ETHUSD2 = async () => {
+    console.log("--- TOKEN/USD ---");
+    const Web3 = require("web3");
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(
+        "https://rinkeby.infura.io/v3/fedfa150b08c4b8faacdc53c2e673798"
+      )
+    );
+    const aggregatorInterfaceABI = ABICODE;
+    console.log("TOKEN",this.state.token2);
+    var addr = currencies[this.state.token2].address;
+    const priceFeed = new web3.eth.Contract(aggregatorInterfaceABI, addr);
+    priceFeed.methods
+      .latestAnswer()
+      .call()
+      .then((price) => {
+        //Do something with price
+        price = price / 100000000;
+        this.setState({value2: price});
         console.log(price);
       });
   }
@@ -68,14 +101,18 @@ class App extends React.Component {
         <p>Network: Rinkeby</p>
         <p>Aggregator: Token/USD</p>
         <p/>
-        <select id="mySelect" onChange={e => this.setCoin(e, 'token')}>
+        <select id="mySelect" onChange={e => this.handleFormChange(e, 'token1', 1)}>
           {this.createSelectItems()}
         </select>
-        <Button variant="primary" onClick={this.ETHUSD}>
-          Tell me the Price
-        </Button>
+        &nbsp;=>&nbsp;
+        <select id="mySelect" onChange={e => this.handleFormChange(e, 'token2', 2)}>
+          {this.createSelectItems()}
+        </select>
         <p/>
-        ${this.state.value} USD
+        ${this.state.value1} USD
+        &nbsp;=>&nbsp;
+        ${this.state.value2} USD
+        <p/>
       </div>
     );
   }

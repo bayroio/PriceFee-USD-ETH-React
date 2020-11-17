@@ -41,5 +41,13 @@
         "symbol": "EUR",
         "decimals": 18
         }
+        ,
+        {
+        "address": "0x3Ae2F46a2D84e3D5590ee6Ee5116B80caF77DeCA",
+        "chainId": 4,
+        "name": "Yen",
+        "symbol": "JPY ",
+        "decimals": 18
+        }
     ]
 }
