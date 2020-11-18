@@ -6,7 +6,6 @@
  */
 
 import React from "react";
-import Button from "react-bootstrap/Button";
 import "./styles.css";
 //import Web3 from "web3";
 
@@ -18,19 +17,25 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      intro1: 0,
+      intro2: 0,
       token1: 0,
       token2: 0,
       value1: null,
-      value2: null
+      value2: null,
+      precioUnitario: null
     };
   }
 
+  componentDidMount = async () =>{
+    this.ETHUSD1();
+    this.ETHUSD2();
+  };
 
-
-  handleFormChange (e, property, method) {
+  handleCoinChange (e, property, method) {
     const { value } = e.target;
     this.setState({[property]: value}, () => {
-      if(method == 1){
+      if(method === 1){
         this.ETHUSD1();
       } else {
         this.ETHUSD2();
@@ -38,7 +43,18 @@ class App extends React.Component {
     });
   }
 
-  createSelectItems() {
+  handleValueChange (e, property, method) {
+    const { value } = e.target;
+    this.setState({[property]: value}, () => {
+      if(method === 1){
+        this.calcConverValue(1);
+      } else {
+        //this.calcConverValue(2);
+      }
+    });
+  }
+
+  createSelectItems () {
     let items = [];
     for (let i = 0; i < currencies.length; i++) {
       items.push(<option key={i} value={i}>{currencies[i].symbol}</option>);
@@ -66,6 +82,7 @@ class App extends React.Component {
         price = price / 100000000;
         this.setState({value1: price});
         console.log(price);
+        this.calcConverCoin();
       });
   }
 
@@ -89,7 +106,52 @@ class App extends React.Component {
         price = price / 100000000;
         this.setState({value2: price});
         console.log(price);
+        this.calcConverCoin();
       });
+  }
+
+  calcConverValue (opc) {
+    console.log("Entrando a calcConverValue",opc);
+    if(opc === 1){
+      var cr = 0;
+      var unit = 0;
+      const cs = this.state.intro1;
+      const priceCS = this.state.value1;
+      const priceCR = this.state.value2;
+      console.log("CS",cs);
+      console.log("priceCS",priceCS);
+      console.log("priceCR",priceCR);
+      cr = (cs*priceCS)/priceCR;
+      unit = cs/cr;
+      this.setState({intro2: cr, precioUnitario: unit});
+    } else {
+      var cr = 0;
+      var unit = 0;
+      const cs = this.state.intro2;
+      const priceCS = this.state.value2;
+      const priceCR = this.state.value1;
+      console.log("CS",cs);
+      console.log("priceCS",priceCS);
+      console.log("priceCR",priceCR);
+      cr = (cs*priceCS)/priceCR;
+      unit = cs/cr;
+      this.setState({intro1: cr, precioUnitario: unit});
+    }
+  }
+
+  calcConverCoin () {
+    console.log("Entrando a calcConverCoin");
+    var cr = 0;
+    var unit = 0;
+    const cs = this.state.intro1;
+    const priceCS = this.state.value1;
+    const priceCR = this.state.value2;
+    console.log("CS",cs);
+    console.log("priceCS",priceCS);
+    console.log("priceCR",priceCR);
+    cr = (cs*priceCS)/priceCR;
+    unit = cs/cr;
+    this.setState({intro2: cr, precioUnitario: unit});
   }
 
   render() {
@@ -101,17 +163,18 @@ class App extends React.Component {
         <p>Network: Rinkeby</p>
         <p>Aggregator: Token/USD</p>
         <p/>
-        <select id="mySelect" onChange={e => this.handleFormChange(e, 'token1', 1)}>
-          {this.createSelectItems()}
-        </select>
-        &nbsp;=>&nbsp;
-        <select id="mySelect" onChange={e => this.handleFormChange(e, 'token2', 2)}>
+        <input name="name" id="name" type="text" value={this.state.intro1} className="Main-box" onChange={e => this.handleValueChange(e, 'intro1', 1)} />
+        <select id="mySelect" onChange={e => this.handleCoinChange(e, 'token1', 1)}>
           {this.createSelectItems()}
         </select>
         <p/>
-        ${this.state.value1} USD
-        &nbsp;=>&nbsp;
-        ${this.state.value2} USD
+        <input name="name" id="name" type="text" value={this.state.intro2} className="Main-box" onChange={e => this.handleValueChange(e, 'intro2', 2)} />
+        <select id="mySelect" onChange={e => this.handleCoinChange(e, 'token2', 2)}>
+          {this.createSelectItems()}
+        </select>
+        <p/>
+        Precio Unitario: ${this.state.precioUnitario} USD
+        <p/>
         <p/>
       </div>
     );
