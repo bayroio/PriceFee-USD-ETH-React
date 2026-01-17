@@ -14,7 +14,7 @@
     "react-scripts": "3.0.1",
     "readable-stream": "3.6.0",
     "stream-browserify": "3.0.0",
-    "web3": "1.2.11"
+    "web3": "4.16.0"
   },
   "devDependencies": {
     "typescript": "3.8.3"
